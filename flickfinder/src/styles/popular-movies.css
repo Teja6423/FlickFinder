@@ -1,0 +1,62 @@
+.popular-movies{
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    
+}
+h2{
+    margin: 10px 20px;
+}
+.popular-movie{
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 16px;
+    padding: 0px 10px;
+    scroll-behavior: smooth;
+}
+.movie{
+    display: flex;
+    padding: 10px;
+    flex-direction: column;
+    align-items: center;
+    min-height: max-content;
+}
+.movie:hover{
+    cursor: pointer;
+}
+.movie:hover img {
+    transform: scale(1.05); /* Increase size by 10% */
+}
+.movie div{
+    display: flex;
+    padding: 5px;
+    flex-direction: column;
+    justify-content: center;
+    align-content: space-around;
+    align-content: space-between;
+}
+.movie img{
+    height: 250px;
+    margin: 5px;
+    border-radius: 10px;
+    transition: transform 0.3s ease-in-out;
+}
+.movie p{
+    margin: 0;
+}
+.movie-title{
+    font-weight: 600;
+    font-size: large;
+}
+.movie-title:hover{
+    color: blue;
+    transition: 100ms;
+}
+.movie-r-date{
+    font-weight: 300;
+    font-size: small;
+    color: grey;
+}
