@@ -1,0 +1,134 @@
+.popular-movies {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+h2 {
+    margin: 10px 20px;
+}
+
+.slider-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.scroll-container {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto; /* Allow scrolling */
+    gap: 16px;
+    padding: 0px 10px;
+    scroll-behavior: smooth;
+    width: 100%;
+
+    /* Hide scrollbar but keep scrolling */
+    scrollbar-width: none; /* Firefox */
+}
+
+.scroll-container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+}
+
+.movie {
+    display: flex;
+    padding: 10px;
+    flex-direction: column;
+    align-items: center;
+    min-height: max-content;
+}
+
+.movie:hover {
+    cursor: pointer;
+}
+
+.movie:hover img {
+    transform: scale(1.05);
+}
+
+.movie div {
+    display: flex;
+    padding: 5px;
+    flex-direction: column;
+    justify-content: center;
+    align-content: space-around;
+    align-content: space-between;
+}
+
+.movie img {
+    height: 250px;
+    margin: 5px;
+    border-radius: 10px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.movie p {
+    margin: 0;
+}
+
+.movie-title {
+    font-weight: 600;
+    font-size: large;
+}
+
+.movie-title:hover {
+    color: blue;
+    transition: 100ms;
+}
+
+.movie-r-date {
+    font-weight: 300;
+    font-size: small;
+    color: grey;
+}
+
+/* Navigation Buttons */
+.arrow {
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 10px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    border-radius: 50%;
+    transition: background 0.3s ease-in-out;
+}
+
+.arrow:hover {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.arrow.left {
+    left: 10px;
+}
+
+.arrow.right {
+    right: 10px;
+}
+
+/* Switch Button */
+.switchButton {
+    all: unset;
+    font-size: inherit;
+    font-weight: inherit;
+    cursor: pointer;
+    margin: 10px 10px;
+    color: grey;
+    transition: color 0.2s ease-in-out, text-decoration 0.2s ease-in-out;
+}
+
+.switchButton:hover {
+    color: rgb(74, 71, 71);
+}
+
+.switchButton.active {
+    color: black;
+    text-decoration: underline;
+}

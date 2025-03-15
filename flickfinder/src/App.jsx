@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import NavBar from './components/navBar';
-import PopularMovies from './components/popularMovies';
 import './styles/style.css';
+import PopularContent from './components/popularContent';
+import TrendingContent from './components/trendingContent';
 function App() {
 
   return (
     <div className='container'>
       <NavBar />
-      <PopularMovies />
+      <TrendingContent />
+      <PopularContent />
     </div>
     
   )
