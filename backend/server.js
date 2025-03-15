@@ -48,6 +48,22 @@ app.get("/api/trending/shows", async (req, res) => {
     res.status(500).json({ error: error.response?.data || error.message });
   }
 });
+app.get("/api/search/multi", async (req, res) => {
+  const search_item = req.query.query;
+
+  if (!search_item) {
+      return res.status(400).json({ error: "Search query is required" });
+  }
+
+  try {
+      const response = await api.get(`search/multi?query=${encodeURIComponent(search_item)}`);
+      res.json(response.data);
+  } catch (error) {
+      console.error("TMDB API Error:", error.response?.data || error.message);
+      res.status(500).json({ error: error.response?.data || error.message });
+  }
+});
+
 
 
 app.listen(port, () => {
