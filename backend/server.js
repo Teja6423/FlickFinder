@@ -2,7 +2,6 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import api from "./api.js";  
-import axios from "axios";
 
 dotenv.config();
 

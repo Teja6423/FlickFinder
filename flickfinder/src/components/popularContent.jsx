@@ -6,6 +6,9 @@ function PopularContent() {
     const [content, setContent] = useState([]);
     const [active, setActive] = useState(true);
     const scrollRef = useRef(null);
+    
+    // Store cached data
+    const [cache, setCache] = useState({ movies: [], shows: [] });
 
     useEffect(() => {
         const fetchContent = async () => {
@@ -14,10 +17,25 @@ function PopularContent() {
                 ? "http://localhost:3131/api/popular/movies"
                 : "http://localhost:3131/api/popular/shows";
 
+            // Check if data is already cached
+            if (active && cache.movies.length > 0) {
+                setContent(cache.movies);
+                return;
+            } 
+            if (!active && cache.shows.length > 0) {
+                setContent(cache.shows);
+                return;
+            }
+
             try {
                 const response = await axios.get(link, { signal: controller.signal });
                 setContent(response.data.results);
-                console.log("Content fetched:", response.data.results);
+                
+                // Cache the response
+                setCache(prevCache => ({
+                    ...prevCache,
+                    [active ? "movies" : "shows"]: response.data.results
+                }));
             } catch (error) {
                 if (axios.isCancel(error)) {
                     console.log("Request canceled:", error.message);
@@ -28,12 +46,13 @@ function PopularContent() {
 
             return () => controller.abort(); // Cleanup
         };
+
         if (scrollRef.current) {
             scrollRef.current.scrollLeft = 0;
         }
-        
+
         fetchContent();
-    }, [active]);
+    }, [active, cache]); // Depend on cache to prevent unnecessary fetches
 
     // Function to handle horizontal scrolling
     const scroll = (direction) => {
