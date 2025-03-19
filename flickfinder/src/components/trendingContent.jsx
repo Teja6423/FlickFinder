@@ -8,8 +8,10 @@ function TrendingContent() {
     const scrollRef = useRef(null);
 
     useEffect(() => {
+        const controller = new AbortController();
+
         const fetchContent = async () => {
-            const controller = new AbortController();
+            setContent([]); // ✅ Clear content before fetching new data
             const link = active
                 ? "http://localhost:3131/api/trending/movies"
                 : "http://localhost:3131/api/trending/shows";
@@ -25,17 +27,21 @@ function TrendingContent() {
                     console.error("Error fetching content:", error);
                 }
             }
-
-            return () => controller.abort(); // Cleanup
         };
+
+        fetchContent();
+
+        return () => controller.abort();
+    }, [active]);
+
+    // Reset scroll position when active tab changes
+    useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollLeft = 0;
         }
-        
-
-        fetchContent();
     }, [active]);
 
+    // Scroll functions
     const scrollLeft = () => {
         if (scrollRef.current) scrollRef.current.scrollLeft -= 300;
     };
@@ -60,23 +66,27 @@ function TrendingContent() {
             <div className="slider-container">
                 <button className="arrow left" onClick={scrollLeft}>{"<"}</button>
                 <div className="scroll-container" ref={scrollRef}>
-                    {content.map((movie, index) => (
-                        <div key={index} className="movie">
-                            <img src={`https://image.tmdb.org/t/p/w200/${movie.poster_path}`} alt="movie." />
-                            <div>
-                                <p className="movie-title">{movie.title || movie.name}</p>
-                                <p className="movie-r-date">
-                                    {movie.release_date || movie.first_air_date
-                                        ? new Date(movie.release_date || movie.first_air_date).toLocaleDateString("en-US", {
-                                            month: "short",
-                                            day: "numeric",
-                                            year: "numeric",
-                                        })
-                                        : ""}
-                                </p>
+                    {content.length === 0 ? (
+                        <p>Loading Trending Content...</p>
+                    ) : (
+                        content.map((movie, index) => (
+                            <div key={index} className="movie">
+                                <img src={`https://image.tmdb.org/t/p/w200/${movie.poster_path}`} alt="movie poster" />
+                                <div>
+                                    <p className="movie-title">{movie.title || movie.name}</p>
+                                    <p className="movie-r-date">
+                                        {movie.release_date || movie.first_air_date
+                                            ? new Date(movie.release_date || movie.first_air_date).toLocaleDateString("en-US", {
+                                                month: "short",
+                                                day: "numeric",
+                                                year: "numeric",
+                                            })
+                                            : ""}
+                                    </p>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))
+                    )}
                 </div>
                 <button className="arrow right" onClick={scrollRight}>{">"}</button>
             </div>

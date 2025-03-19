@@ -9,6 +9,7 @@ const api = axios.create({
     accept: "application/json",
     Authorization: `Bearer ${process.env.TMDB_BEARER_KEY}`,
   },
+  timeout: 5000,
 });
 
 export default api;

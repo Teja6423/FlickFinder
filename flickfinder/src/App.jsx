@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React from 'react';
 import NavBar from './components/navBar';
 import './styles/style.css';
 import PopularContent from './components/popularContent';

@@ -18,9 +18,11 @@ app.get("/api/popular/movies", async (req, res) => {
     const response = await api.get("/movie/popular");
     res.json(response.data);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("TMDB API Error:", error.response?.data || error.message);
+    res.status(500).json({ error: error.response?.data || error.message });
   }
 });
+
 app.get("/api/popular/shows", async (req, res) => {
   try {
     const response = await api.get("/tv/popular");

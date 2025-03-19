@@ -45,18 +45,56 @@
 .search-bar {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     min-width: 30%;
     background-color: white;
     border-radius: 20px;
     padding: 5px 10px;
 }
 
-.search-bar input {
+.search-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    position: relative; /* Ensures the dropdown is positioned relative to this container */
+}
+
+.search-container input {
+    position: relative;
     background: transparent;
     border: none;
-    flex-grow: 1;
     padding: 5px;
 }
+
+.showSearchResult {
+    position: absolute;
+    top: 100%; /* Positions it right below the input */
+    left: 0;
+    width: 100%;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    max-height: 200px; /* Prevents it from becoming too large */
+    overflow-y: auto; /* Enables scrolling if too many results */
+    z-index: 1000; /* Ensures it appears on top of other elements */
+}
+
+.showSearchResult ul {
+    list-style: none;
+    padding: 5px;
+    margin: 0;
+}
+
+.showSearchResult li {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.showSearchResult li:hover {
+    background-color: #f0f0f0;
+}
+
 
 .search-bar button {
     background: transparent;
@@ -69,3 +107,4 @@
     outline: none;
     background: transparent;
 }
+  
