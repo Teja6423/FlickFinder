@@ -1,8 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "../styles/popular-content.css";
 
-function PopularContent() {
+function PopularContent({ type }) {
+    console.log(type)
+    const navigate = useNavigate();
     const [content, setContent] = useState([]);
     const [active, setActive] = useState(true);
     const scrollRef = useRef(null);
@@ -11,9 +14,8 @@ function PopularContent() {
         const controller = new AbortController();
 
         const fetchContent = async () => {
-            const link = active
-                ? "http://localhost:3131/api/popular/movies"
-                : "http://localhost:3131/api/popular/shows";
+            const link = `http://localhost:3131/api/${type}/${active ? "movies" : "shows"}`;
+                
 
             try {
                 const response = await axios.get(link, { signal: controller.signal });
@@ -30,17 +32,13 @@ function PopularContent() {
 
         fetchContent();
 
-        return () => controller.abort(); // ✅ Correct cleanup
-    }, [active]);
-
-    // Reset scroll position when active category changes
+        return () => controller.abort();
+    }, [active, type]);
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollLeft = 0;
         }
-    }, [active]);
-
-    // Function to handle horizontal scrolling
+    }, [active, type]);
     const scroll = (direction) => {
         if (scrollRef.current) {
             const scrollAmount = 300;
@@ -54,7 +52,7 @@ function PopularContent() {
     return (
         <div className="popular-movies">
             <h2>
-                Popular
+                {type}
                 <button className={`switchButton ${active ? "active" : ""}`} type="button" onClick={() => setActive(true)}>
                     Movies
                 </button>{" "}
@@ -69,9 +67,15 @@ function PopularContent() {
                     {content.length === 0 ? (
                         <p>Loading Popular Content...</p>
                     ) : (
-                        content.map((movie, index) => (
-                            <div key={index} className="movie">
-                                <img src={`https://image.tmdb.org/t/p/w200/${movie.poster_path}`} alt="movie poster" />
+                        content.map((movie) => (
+                            <div 
+                                key={movie.id} 
+                                onClick={() => navigate(`/${movie.media_type || (active ? "movie" : "tv")}/${movie.id}`)}
+                                className="movie">
+                                <img 
+                                    src={movie.poster_path ? `https://image.tmdb.org/t/p/w200/${movie.poster_path}` : "/fallback-poster.jpg"} 
+                                    alt={movie.title || movie.name} 
+                                />
                                 <div>
                                     <p className="movie-title">{movie.title || movie.name}</p>
                                     <p className="movie-r-date">

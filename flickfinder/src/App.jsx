@@ -1,18 +1,28 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NavBar from './components/navBar';
 import './styles/style.css';
 import PopularContent from './components/popularContent';
-import TrendingContent from './components/trendingContent';
-function App() {
+import ContentDetails from './components/contentDetails';
 
+function App() {
   return (
-    <div className='container'>
-      <NavBar />
-      <TrendingContent />
-      <PopularContent />
-    </div>
-    
-  )
-};
+    <Router>
+      <div className='container'>
+        <NavBar />
+        <Routes>
+          <Route path='/' element={
+            <>
+              <PopularContent type="trending" />
+              <PopularContent type="popular" />
+              <PopularContent type="top-rated" />
+            </>
+          } />
+          <Route path='/:type/:id' element={<ContentDetails />} />
+        </Routes>
+      </div>
+    </Router>
+  );
+}
 
 export default App;
