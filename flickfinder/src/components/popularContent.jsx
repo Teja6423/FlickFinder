@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import "../styles/popular-content.css";
 
 function PopularContent({ type }) {
-    console.log(type)
     const navigate = useNavigate();
     const [content, setContent] = useState([]);
     const [active, setActive] = useState(true);
@@ -65,7 +64,7 @@ function PopularContent({ type }) {
                 <button className="arrow left" onClick={() => scroll("left")}>&#8249;</button>
                 <div className="scroll-container" ref={scrollRef}>
                     {content.length === 0 ? (
-                        <p>Loading Popular Content...</p>
+                        <p>Failed to fetch content from the API, try reloading....</p>
                     ) : (
                         content.map((movie) => (
                             <div 

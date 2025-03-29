@@ -1,0 +1,99 @@
+
+.content-details {
+    position: relative;
+    width: 100%;
+    height: 560px;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    color: white;
+    text-align: center;
+}
+
+/* Dark overlay to improve text readability */
+.overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6); /* Semi-transparent black */
+}
+
+/* Container for details */
+.details-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    z-index: 2; /* Ensures text and poster appear above background */
+    max-width: 800px;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+
+}
+
+/* Poster styling */
+#poster {
+    border-radius: 10px;
+    margin-bottom: 10px;
+    transition: transform 0.3s ease-in-out; /* Smooth transition */
+}
+
+#poster:hover {
+    transform: scale(1.03); /* Slight zoom effect */
+}
+
+
+.details-container p{
+    margin-left: 2px;
+}
+
+.details{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+#actor-img {
+    width: 150px;
+    height: 225px;
+    border-radius: 10px;
+    transition: transform 0.3s ease-in-out; /* Smooth transition */
+}
+
+#actor-img:hover {
+    transform: scale(1.03); /* Slight zoom effect */
+}
+
+.cast{
+    display: flex;
+    flex-direction: row;
+    overflow-x: scroll;
+}
+.actor{
+    margin: 5px 10px;
+}
+
+.contentGallery{
+    display: flex;
+    flex-direction: column;
+}
+
+.images{
+    display: flex;
+    flex-direction: row;
+    overflow-y: scroll;
+}
+.image{
+    display: flex;
+    border-radius: 5px;
+    margin: 10px;
+    height: 169px;
+    width: 300px;
+    transition: transform 0.3s ease-in-out;
+}
+.image:hover{
+    transform: scale(1.03);
+
+}

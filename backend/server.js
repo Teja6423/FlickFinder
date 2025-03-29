@@ -12,7 +12,6 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-// Generalized Route for Popular, Trending, and Top-Rated
 const categories = ["popular", "trending", "top-rated"];
 const types = { movies: "movie", shows: "tv" };
 
@@ -21,8 +20,7 @@ categories.forEach((category) => {
         app.get(`/api/${category}/${key}`, async (req, res) => {
             try {
                 let endpoint = `/${value}/${category}`;
-                
-                // Fix for Top Rated (TMDb uses "top_rated" instead of "top-rated")
+
                 if (category === "top-rated") endpoint = `/${value}/top_rated`;
                 if (category === "trending") endpoint = `/trending/${value}/week`;
 
@@ -35,7 +33,28 @@ categories.forEach((category) => {
         });
     });
 });
-// Search Route
+
+app.get("/api/movie/:movieid/credits", async (req, res) => {
+    const { movieid } = req.params;
+    try {
+        const response = await api.get(`/movie/${movieid}/credits`);
+        res.json(response.data);
+    } catch (error) {
+        console.error("TMDB API Error:", error.response?.data || error.message);
+        res.status(500).json({ error: error.response?.data || error.message });
+    }
+});
+app.get("/api/tv/:seriesid/credits", async (req, res) => {
+    const { seriesid } = req.params;
+    try {
+        const response = await api.get(`/tv/${seriesid}/credits`);
+        res.json(response.data);
+    } catch (error) {
+        console.error("TMDB API Error:", error.response?.data || error.message);
+        res.status(500).json({ error: error.response?.data || error.message });
+    }
+});
+
 app.get("/api/search/multi", async (req, res) => {
     const search_item = req.query.query;
     if (!search_item) return res.status(400).json({ error: "Search query is required" });
@@ -49,7 +68,29 @@ app.get("/api/search/multi", async (req, res) => {
     }
 });
 
-// Movie/TV Show Details Route
+app.get("/api/movie/:id/images", async (req,res)=>{
+    const {id} = req.params;
+
+    try{
+        const response = await api.get(`/movie/${id}/images`);
+        res.json(response.data);
+    }catch(error){
+        console.error("TMDB API Error:", error.response?.data || error.message);
+        res.status(500).json({ error: error.response?.data || error.message });
+    }
+});
+app.get("/api/tv/:id/images", async (req,res)=>{
+    const {id} = req.params;
+
+    try{
+        const response = await api.get(`/tv/${id}/images`);
+        res.json(response.data);
+    }catch(error){
+        console.error("TMDB API Error:", error.response?.data || error.message);
+        res.status(500).json({ error: error.response?.data || error.message });
+    }
+});
+
 app.get("/api/:type/:id", async (req, res) => {
     const { type, id } = req.params;
 

@@ -76,7 +76,7 @@ function NavBar() {
                                             navigate(`/${item.media_type}/${item.id}`);
                                             setShowDropdown(false); // ✅ Close dropdown on selection
                                         }}>
-                                        {item.title || item.name}, {item.media_type}
+                                        {item.title || item.name}, {item.media_type}, {item.first_air_date?.split("-")[0] || item.release_date?.split("-")[0] || "N/A"}
                                     </li>
                                 ))}
                             </ul>
