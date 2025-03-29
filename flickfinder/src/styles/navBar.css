@@ -17,7 +17,7 @@
 }
 
 .nav-buttons img {
-    width: 150px;
+    max-width: 150px;
     transition: transform 50ms ease-in-out;
 }
 
@@ -107,4 +107,8 @@
     outline: none;
     background: transparent;
 }
-  
+@media (max-width: 440px) {
+    .nav-bar{
+        padding: 10px 13px;
+    }
+}

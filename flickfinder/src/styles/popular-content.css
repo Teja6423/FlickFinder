@@ -35,7 +35,7 @@ h2 {
 
 .movie {
     display: flex;
-    padding: 10px;
+    padding: 1px;
     flex-direction: column;
     align-items: center;
     min-height: max-content;
@@ -59,7 +59,7 @@ h2 {
 }
 
 .movie img {
-    height: 250px;
+    max-height: 250px;
     margin: 5px;
     border-radius: 10px;
     transition: transform 0.3s ease-in-out;
@@ -72,7 +72,14 @@ h2 {
 .movie-title {
     font-weight: 600;
     font-size: large;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Allow max 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
 }
+
 
 .movie-title:hover {
     color: blue;
@@ -131,4 +138,49 @@ h2 {
 .switchButton.active {
     color: black;
     text-decoration: underline;
+}
+@media (max-width: 1000px) {
+    .movie img {
+        max-width: 160px;
+        height: auto;
+    }
+    .movie-title {
+        font-size: 1rem; /* Adjust title size */
+    }
+    .movie-r-date {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 800px) {
+    .movie img {
+        max-width: 140px;
+        height: auto;
+    }
+    .movie-title {
+        font-size: 0.9rem;
+    }
+    .movie-r-date {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .movie img {
+        max-width: 110px;
+        height: auto;
+    }
+    .movie:hover img {
+        transform: none;
+    }
+    .scroll-container {
+        gap: 8px; /* Reduce gap between movies */
+        padding: 0px 5px;
+    }
+    .movie-title {
+        font-size: 0.85rem; /* Smaller for compact screens */
+    }
+    .movie-r-date {
+        font-size: 0.75rem;
+    }
 }
