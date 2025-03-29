@@ -1,5 +1,4 @@
-backend/node_modules/
-flickfinder/node_modules/
+node_modules/
 .env
 backend/.env
 dist/
