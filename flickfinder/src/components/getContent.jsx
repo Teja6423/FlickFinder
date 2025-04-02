@@ -3,7 +3,9 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "../styles/popular-content.css";
 
-function PopularContent({ type }) {
+const weblink = "http://localhost:3131/api";
+
+function GetContent({ type, category, content_id }) {
     const navigate = useNavigate();
     const [content, setContent] = useState([]);
     const [active, setActive] = useState(true);
@@ -13,13 +15,18 @@ function PopularContent({ type }) {
         const controller = new AbortController();
 
         const fetchContent = async () => {
-            const link = `http://localhost:3131/api/${type}/${active ? "movies" : "shows"}`;
-                
+            let link = "";
+            if (type === "recommendations") {
+                link = `${weblink}/${category}/${content_id}/recommendations`;
+            } else if (type === "similar") { // ✅ Fixed typo
+                link = `${weblink}/${category}/${content_id}/similar`;
+            } else {
+                link = `${weblink}/${type}/${active ? "movies" : "shows"}`;
+            }
 
             try {
                 const response = await axios.get(link, { signal: controller.signal });
                 setContent(response.data.results);
-                console.log("Content fetched:", response.data.results);
             } catch (error) {
                 if (axios.isCancel(error)) {
                     console.log("Request canceled:", error.message);
@@ -31,12 +38,17 @@ function PopularContent({ type }) {
 
         fetchContent();
 
-    }, [active, type]);
+        return () => controller.abort(); // ✅ Cleanup API call on unmount
+    }, [active, type, category, content_id]);
+
     useEffect(() => {
-        if (scrollRef.current) {
-            scrollRef.current.scrollLeft = 0;
-        }
-    }, [active, type]);
+        setTimeout(() => {
+            if (scrollRef.current) {
+                scrollRef.current.scrollLeft = 0;
+            }
+        }, 100); // ✅ Fix potential issues with immediate scroll reset
+    }, [active, type, category, content_id]);
+
     const scroll = (direction) => {
         if (scrollRef.current) {
             const scrollAmount = 300;
@@ -51,13 +63,26 @@ function PopularContent({ type }) {
         <div className="popular-movies">
             <h2>
                 {type}
-                <button className={`switchButton ${active ? "active" : ""}`} type="button" onClick={() => setActive(true)}>
-                    Movies
-                </button>{" "}
-                /{" "}
-                <button className={`switchButton ${!active ? "active" : ""}`} type="button" onClick={() => setActive(false)}>
-                    TV Shows
-                </button>
+
+                {type !== "recommendations" && (
+                    <>
+                        <button
+                            className={`switchButton ${active ? "active" : ""}`}
+                            type="button"
+                            onClick={() => setActive(true)}
+                        >
+                            Movies
+                        </button>
+                        /
+                        <button
+                            className={`switchButton ${!active ? "active" : ""}`}
+                            type="button"
+                            onClick={() => setActive(false)}
+                        >
+                            TV Shows
+                        </button>
+                    </>
+                )}
             </h2>
             <div className="slider-container">
                 <button className="arrow left" onClick={() => scroll("left")}>&#8249;</button>
@@ -96,4 +121,4 @@ function PopularContent({ type }) {
     );
 }
 
-export default PopularContent;
+export default GetContent;

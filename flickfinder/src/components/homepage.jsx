@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import PopularContent from './popularContent';
+import GetContent from './getContent';
 
 export default function HomePage() {
     const [showTrending, setShowTrending] = useState(false);
@@ -20,9 +20,9 @@ export default function HomePage() {
 
     return (
         <>
-            {showTrending && <PopularContent type="trending" />}
-            {showPopular && <PopularContent type="popular" />}
-            {showTopRated && <PopularContent type="top-rated" />}
+            {showTrending && <GetContent type="trending" />}
+            {showPopular && <GetContent type="popular" />}
+            {showTopRated && <GetContent type="top-rated" />}
         </>
     );
 }

@@ -27,12 +27,29 @@ categories.forEach((category) => {
                 const response = await api.get(endpoint);
                 res.json(response.data);
             } catch (error) {
-                console.error("TMDB API Error:", error.response?.data || error.message);
+                console.error(`TMDB API Error fetching ${category}:`, error.response?.data || error.message);
                 res.status(500).json({ error: error.response?.data || error.message });
             }
         });
     });
 });
+
+app.get("/api/:contenttype/:contentid/:category", async (req, res) => {
+    const { contenttype, contentid, category } = req.params;
+
+    try {
+        const response = await api.get(`/${contenttype}/${contentid}/${category}`);
+        res.json(response.data);
+    } catch (error) {
+        console.error("TMDB API Error fetching content:", error.response?.data || error.message);
+        console.error("Params:", { contenttype, contentid, category });
+
+        res.status(error.response?.status || 500).json({
+            error: error.response?.data || "Something went wrong!",
+        });
+    }
+});
+
 
 app.get("/api/movie/:movieid/credits", async (req, res) => {
     const { movieid } = req.params;

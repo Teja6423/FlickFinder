@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import "../styles/details.css"
 import profileAlt from "../assets/profile-alt.png";
+import GetContent from "./getContent";
 
 const weblink = "http://localhost:3131/api";
 function ContentDetails() {
@@ -49,6 +50,10 @@ function ContentDetails() {
     
         fetchDetails();
     }, [type, id]);
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }, [type, id]);
+    
     
 
     if (loading) return <p>Loading details...</p>;
@@ -139,6 +144,10 @@ function ContentDetails() {
                         <p>Failed to Fetch Images from the API...</p>
                     )}
                 </div>
+            </div>
+            <div>
+            <GetContent type={"recommendations"} category={type} content_id={id} />
+            <GetContent type={"similar"} category={type} content_id={id} />
             </div>
         </div>
     );
