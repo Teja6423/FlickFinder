@@ -147,7 +147,6 @@ function ContentDetails() {
             </div>
             <div>
             <GetContent type={"recommendations"} category={type} content_id={id} />
-            <GetContent type={"similar"} category={type} content_id={id} />
             </div>
         </div>
     );

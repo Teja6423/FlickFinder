@@ -18,9 +18,7 @@ function GetContent({ type, category, content_id }) {
             let link = "";
             if (type === "recommendations") {
                 link = `${weblink}/${category}/${content_id}/recommendations`;
-            } else if (type === "similar") { // ✅ Fixed typo
-                link = `${weblink}/${category}/${content_id}/similar`;
-            } else {
+            }else {
                 link = `${weblink}/${type}/${active ? "movies" : "shows"}`;
             }
 
@@ -64,7 +62,7 @@ function GetContent({ type, category, content_id }) {
             <h2>
                 {type}
 
-                {type !== "recommendations" && (
+                {!(type === "recommendations") && (
                     <>
                         <button
                             className={`switchButton ${active ? "active" : ""}`}
