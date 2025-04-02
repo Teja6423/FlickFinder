@@ -55,6 +55,28 @@ app.get("/api/tv/:seriesid/credits", async (req, res) => {
     }
 });
 
+app.get("/api/movie/:movieid/videos", async(req,res)=>{
+    const {movieid} = req.params;
+    try{
+        const response = await api.get(`/movie/${movieid}/videos`);
+        res.json(response.data);
+    }catch(error){
+        console.log(`movieid: ${movieid}`)
+        console.log("Error fetching content trailers", error.response?.data || error.message);
+        res.status(500).json({error: error.response?.data || error.message});
+    }
+});
+app.get("/api/tv/:tvid/videos", async(req,res)=>{
+    const {tvid} = req.params;
+    try{
+        const response = await api.get(`/tv/${tvid}/videos`);
+        res.json(response.data);
+    }catch(error){
+        console.log("Error fetching content trailers", error.response?.data || error.message);
+        res.status(500).json({error: error.response?.data || error.message});
+    }
+});
+
 app.get("/api/search/multi", async (req, res) => {
     const search_item = req.query.query;
     if (!search_item) return res.status(400).json({ error: "Search query is required" });

@@ -9,40 +9,48 @@
     justify-content: start;
     color: white;
     text-align: center;
+    overflow-y: auto;
 }
 p{
     margin: 10px;
+    align-self: center;
 }
-/* Dark overlay to improve text readability */
+p:hover{
+    cursor: default;
+}
+h1:hover, h2:hover {
+    cursor: default;
+}
+
+
 .overlay {
     position: absolute;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.6); /* Semi-transparent black */
+    background: rgba(0, 0, 0, 0.6);
 }
 
-/* Container for details */
 .details-container {
+    position: relative;
     display: flex;
     flex-direction: row;
     align-items: center;
-    z-index: 2; /* Ensures text and poster appear above background */
-    max-width: 800px;
+    z-index: 2;
+    max-width: 900px;
     padding: 20px;
     border-radius: 10px;
     text-align: center;
-
+    gap: 10px;
 }
 
-/* Poster styling */
 #poster {
     border-radius: 10px;
     margin-bottom: 10px;
-    transition: transform 0.3s ease-in-out; /* Smooth transition */
+    transition: transform 0.3s ease-in-out;
 }
 
 #poster:hover {
-    transform: scale(1.03); /* Slight zoom effect */
+    transform: scale(1.03);
 }
 
 
@@ -60,11 +68,11 @@ p{
 #actor-img {
     max-width: 150px;
     border-radius: 10px;
-    transition: transform 0.3s ease-in-out; /* Smooth transition */
+    transition: transform 0.3s ease-in-out; 
 }
 
 #actor-img:hover {
-    transform: scale(1.03); /* Slight zoom effect */
+    transform: scale(1.03);
 }
 
 .cast{
@@ -96,7 +104,42 @@ p{
 .image:hover{
     transform: scale(1.03);
 }
+
+.watch_trailer {
+    background: grey;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    padding: 7px 15px;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: transform 200ms ease-out, background 150ms ease-out, border 150ms ease-out;
+}
+
+.watch_trailer:hover {
+    background: black;
+    border-color: white; 
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+.watch_trailer::before {
+    content: "▶";
+    color: white;
+    margin-right: 5px;
+    font-size: 14px;
+}
+
+
+
 @media (max-width: 1050px) {
+    .content-details{
+        justify-content: center;
+    }
     .details-container {
         flex-direction: column;
     }
@@ -112,6 +155,11 @@ p{
     }
     .image{
         max-width: 250px;
+    }
+    .watch_trailer{
+        font-size: 0.95rem;
+        padding: 6px 12px;
+        cursor: pointer;
     }
 
 }
@@ -131,5 +179,10 @@ p{
     }
     .image{
         max-width: 200px;
+    }
+    .watch_trailer{
+        font-size: 0.85rem;
+        padding: 4px 8px;
+        cursor: pointer;
     }
 }

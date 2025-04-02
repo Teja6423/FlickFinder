@@ -4,42 +4,52 @@ import axios from "axios";
 import "../styles/details.css"
 import profileAlt from "../assets/profile-alt.png";
 
+const weblink = "http://localhost:3131/api";
 function ContentDetails() {
     const { type, id } = useParams();
     const [content, setContent] = useState(null);
     const [cast,setCast] = useState(null)
     const [loading, setLoading] = useState(true);
     const [gallery,setGallery] = useState(null)
+    const [trailer, setTrailer] = useState(null);
 
     useEffect(() => {
         const fetchDetails = async () => {
             try {
-                const response = await axios.get(`http://localhost:3131/api/${type}/${id}`);
+                const response = await axios.get(`${weblink}/${type}/${id}`);
                 setContent(response.data);
+    
                 const castEndpoint = type === "movie" 
-                    ? `http://localhost:3131/api/movie/${id}/credits` 
-                    : `http://localhost:3131/api/tv/${id}/credits`;
-
+                    ? `${weblink}/${type}/${id}/credits` 
+                    : `${weblink}/${type}/${id}/credits`;
+    
                 const rescast = await axios.get(castEndpoint);
                 setCast(rescast.data.cast);
-
-                const images = await axios.get(`http://localhost:3131/api/${type}/${id}/images`);     
-                if (images.data.backdrops != null ){
-                    setGallery(images.data.backdrops);
-                }else{
-                    setGallery(null)
-                }
-                
-
+    
+                const images = await axios.get(`${weblink}/${type}/${id}/images`);     
+                setGallery(images.data.backdrops ?? null);
+    
+                const getvideos = await axios.get(`${weblink}/${type}/${id}/videos`);
+                const videoResults = getvideos.data.results;
+    
+                // Find the first "Official Trailer"
+                const officialTrailer = videoResults.find(video => 
+                    video.site === "YouTube" &&
+                    video.name?.toLowerCase().includes("official trailer") &&
+                    video.type?.toLowerCase() === "trailer"
+                );
+    
+                setTrailer(officialTrailer || null);
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching content details:", error);
                 setLoading(false);
             }
         };
-
+    
         fetchDetails();
     }, [type, id]);
+    
 
     if (loading) return <p>Loading details...</p>;
     if (!content) return <p>Content not found.</p>;
@@ -78,7 +88,16 @@ function ContentDetails() {
                                     <b>Episodes:</b> {content.number_of_episodes}
                                     </>
                                 )}
+                            </p>
+                            {trailer && (
+                                <p key={trailer.id}>
+                                    <button className="watch_trailer"
+                                        onClick={() => window.open(`https://www.youtube.com/watch?v=${trailer.key}`, "_blank")}
+                                    >
+                                        Trailer
+                                    </button>
                                 </p>
+                            )}
 
                         </div>
                     </div>

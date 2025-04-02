@@ -31,7 +31,6 @@ function PopularContent({ type }) {
 
         fetchContent();
 
-        return () => controller.abort();
     }, [active, type]);
     useEffect(() => {
         if (scrollRef.current) {
@@ -72,7 +71,7 @@ function PopularContent({ type }) {
                                 onClick={() => navigate(`/${movie.media_type || (active ? "movie" : "tv")}/${movie.id}`)}
                                 className="movie">
                                 <img 
-                                    src={movie.poster_path ? `https://image.tmdb.org/t/p/w200/${movie.poster_path}` : "/fallback-poster.jpg"} 
+                                    src={movie.poster_path ? `https://image.tmdb.org/t/p/w200/${movie.poster_path}` : "../assets/Poster_Not_Available2.webp"} 
                                     alt={movie.title || movie.name} 
                                 />
                                 <div>
