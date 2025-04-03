@@ -4,6 +4,7 @@ import axios from "axios";
 import "../styles/details.css"
 import profileAlt from "../assets/profile-alt.png";
 import GetContent from "./getContent";
+import ReactPlayer from "react-player/youtube"
 
 const weblink = "http://localhost:3131/api";
 function ContentDetails() {
@@ -13,51 +14,86 @@ function ContentDetails() {
     const [loading, setLoading] = useState(true);
     const [gallery,setGallery] = useState(null)
     const [trailer, setTrailer] = useState(null);
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [popup, setPopup] =useState(false)
+    const [ytTrailer , setYtTrailer] = useState(null)
+    const [videoPopup , setVideoPopup] = useState(false)
 
     useEffect(() => {
         const fetchDetails = async () => {
+            setLoading(true);
+    
+            const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    
             try {
                 const response = await axios.get(`${weblink}/${type}/${id}`);
                 setContent(response.data);
+                await delay(150); // Wait 500ms before next request
+            } catch (error) {
+                console.error("Error fetching content details:", error);
+            }
     
-                const castEndpoint = type === "movie" 
-                    ? `${weblink}/${type}/${id}/credits` 
-                    : `${weblink}/${type}/${id}/credits`;
-    
-                const rescast = await axios.get(castEndpoint);
+            try {
+                const rescast = await axios.get(`${weblink}/${type}/${id}/credits`);
                 setCast(rescast.data.cast);
+                await delay(150);
+            } catch (error) {
+                console.error("Error fetching cast details:", error);
+            }
     
-                const images = await axios.get(`${weblink}/${type}/${id}/images`);     
+            try {
+                const images = await axios.get(`${weblink}/${type}/${id}/images`);
                 setGallery(images.data.backdrops ?? null);
+                await delay(150);
+            } catch (error) {
+                console.error("Error fetching images:", error);
+            }
     
+            try {
                 const getvideos = await axios.get(`${weblink}/${type}/${id}/videos`);
                 const videoResults = getvideos.data.results;
-    
-                // Find the first "Official Trailer"
+                await delay(150);
                 const officialTrailer = videoResults.find(video => 
                     video.site === "YouTube" &&
                     video.name?.toLowerCase().includes("official trailer") &&
                     video.type?.toLowerCase() === "trailer"
                 );
-    
                 setTrailer(officialTrailer || null);
-                setLoading(false);
             } catch (error) {
-                console.error("Error fetching content details:", error);
-                setLoading(false);
+                console.error("Error fetching videos:", error);
             }
-        };
     
-        fetchDetails();
-    }, [type, id]);
+            setLoading(false);
+        };
+        
+            fetchDetails();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }, [type, id]);
+    
+    
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: "smooth" });
     }, [type, id]);
-    
+    const openImageModal = (imageUrl) =>{
+        setPopup(true)
+        setSelectedImage(imageUrl)
+    }
+    const closeImageModal = () =>{
+        setPopup(false)
+        setSelectedImage(null)
+    }
+    const openVideoPlayer = (videoUrl)=>{
+        setVideoPopup(true)
+        setYtTrailer(videoUrl)
+    }
+    const closeVideoPlayer = ()=>{
+        setVideoPopup(false)
+        setYtTrailer(null)
+    }
     
 
     if (loading) return <p>Loading details...</p>;
-    if (!content) return <p>Content not found.</p>;
+    if (!content) return <p>Content not found. Might be the API error, try reloading...</p>;
 
     return (
         <div className="main">
@@ -72,7 +108,7 @@ function ContentDetails() {
                     backgroundRepeat: "no-repeat"
                 }}
             >
-                <div className="overlay"></div> {/* Dark overlay for readability */}
+                <div className="overlay"></div> 
                 <div className="details-container">
                     <div>
                         <img id="poster" src={`https://image.tmdb.org/t/p/w200/${content.poster_path}`} alt="Poster Not Available..." />
@@ -97,7 +133,7 @@ function ContentDetails() {
                             {trailer && (
                                 <p key={trailer.id}>
                                     <button className="watch_trailer"
-                                        onClick={() => window.open(`https://www.youtube.com/watch?v=${trailer.key}`, "_blank")}
+                                        onClick={() => openVideoPlayer(`https://www.youtube.com/watch?v=${trailer.key}`)}
                                     >
                                         Trailer
                                     </button>
@@ -137,6 +173,8 @@ function ContentDetails() {
                                 <img className="image"
                                     src={`https://image.tmdb.org/t/p/w300/${image.file_path}`} 
                                     alt="Gallery image" 
+                                    onClick={()=> openImageModal(`https://image.tmdb.org/t/p/original/${image.file_path}`)}
+                                    style={{ cursor: "pointer" }} // Make image clickable}
                                 />
                             </div>
                         ))
@@ -148,6 +186,19 @@ function ContentDetails() {
             <div>
             <GetContent type={"recommendations"} category={type} content_id={id} />
             </div>
+            {popup && (
+                <div className="popupImage">
+                    <button className="popup_close_button" onClick={closeImageModal}>X</button>
+                    <img src={selectedImage} alt="Image Not Available" />
+                </div>
+            )}
+            {videoPopup && (
+                <div className="VideoPlayer">
+                    <button className="popup_close_button" onClick={closeVideoPlayer}>X</button>
+                    <ReactPlayer className="trailer-player" url={ytTrailer} controls playing />
+                </div>
+            )}
+
         </div>
     );
     

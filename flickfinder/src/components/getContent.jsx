@@ -9,34 +9,43 @@ function GetContent({ type, category, content_id }) {
     const navigate = useNavigate();
     const [content, setContent] = useState([]);
     const [active, setActive] = useState(true);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
     const scrollRef = useRef(null);
 
     useEffect(() => {
         const controller = new AbortController();
+        const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
         const fetchContent = async () => {
             let link = "";
             if (type === "recommendations") {
                 link = `${weblink}/${category}/${content_id}/recommendations`;
-            }else {
+            } else {
                 link = `${weblink}/${type}/${active ? "movies" : "shows"}`;
             }
 
             try {
+                setLoading(true);
+                setError(false);
+                await delay(250);
                 const response = await axios.get(link, { signal: controller.signal });
                 setContent(response.data.results);
+                setLoading(false);
             } catch (error) {
                 if (axios.isCancel(error)) {
                     console.log("Request canceled:", error.message);
                 } else {
-                    console.error("Error fetching Content:", error);
+                    console.error("Error fetching content:", error);
+                    setError(true);
                 }
+                setLoading(false);
             }
         };
 
         fetchContent();
 
-        return () => controller.abort(); // ✅ Cleanup API call on unmount
+        return () => controller.abort();
     }, [active, type, category, content_id]);
 
     useEffect(() => {
@@ -44,7 +53,7 @@ function GetContent({ type, category, content_id }) {
             if (scrollRef.current) {
                 scrollRef.current.scrollLeft = 0;
             }
-        }, 100); // ✅ Fix potential issues with immediate scroll reset
+        }, 200);
     }, [active, type, category, content_id]);
 
     const scroll = (direction) => {
@@ -85,9 +94,11 @@ function GetContent({ type, category, content_id }) {
             <div className="slider-container">
                 <button className="arrow left" onClick={() => scroll("left")}>&#8249;</button>
                 <div className="scroll-container" ref={scrollRef}>
-                    {content.length === 0 ? (
+                    {loading ? (
+                        <p>Loading...</p>
+                    ) : error ? (
                         <p>Failed to fetch content from the API, try reloading....</p>
-                    ) : (
+                    ) :(
                         content.map((movie) => (
                             <div 
                                 key={movie.id} 

@@ -134,7 +134,63 @@ h1:hover, h2:hover {
     font-size: 14px;
 }
 
+.popupImage {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8); /* Dark overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
 
+.popupImage img {
+    width: 80%;
+    max-width: 1080px;
+    max-height: 80%;
+    border-radius: 8px;
+}
+
+.popup_close_button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    font-size: 24px;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 30px;
+
+}
+
+.popup_close_button:hover {
+    background: rgba(255, 255, 255, 0.4);
+    transition: 150ms;
+}
+
+.VideoPlayer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8); /* Dark overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.trailer-player {
+    display: flex;
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 10px;
+}
 
 @media (max-width: 1050px) {
     .content-details{
