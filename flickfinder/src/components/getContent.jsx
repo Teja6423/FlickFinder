@@ -2,8 +2,10 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "../styles/popular-content.css";
+import posterAlt from "../assets/Poster_Not_Available2.webp";
 
-const weblink = "http://localhost:3131/api";
+
+const weblink = import.meta.env.VITE_API_URL;
 
 function GetContent({ type, category, content_id }) {
     const navigate = useNavigate();
@@ -16,37 +18,46 @@ function GetContent({ type, category, content_id }) {
     useEffect(() => {
         const controller = new AbortController();
         const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-        const fetchContent = async () => {
-            let link = "";
-            if (type === "recommendations") {
-                link = `${weblink}/${category}/${content_id}/recommendations`;
-            } else {
-                link = `${weblink}/${type}/${active ? "movies" : "shows"}`;
-            }
-
-            try {
-                setLoading(true);
-                setError(false);
-                await delay(250);
-                const response = await axios.get(link, { signal: controller.signal });
-                setContent(response.data.results);
-                setLoading(false);
-            } catch (error) {
-                if (axios.isCancel(error)) {
-                    console.log("Request canceled:", error.message);
-                } else {
-                    console.error("Error fetching content:", error);
-                    setError(true);
+    
+        const fetchWithRetry = async (url, retries = 5, delayMs = 500) => {
+            for (let attempt = 0; attempt < retries; attempt++) {
+                try {
+                    const response = await axios.get(url, { signal: controller.signal });
+                    setContent(response.data.results);
+                    setLoading(false);
+                    setError(false);
+                    return; // Exit if successful
+                } catch (error) {
+                    if (axios.isCancel(error)) {
+                        console.log("Request canceled:", error.message);
+                        return;
+                    }
+                    console.error(`Error fetching ${url} (Attempt ${attempt + 1}):`, error);
+                    if (attempt < retries - 1) {
+                        await delay(delayMs * (attempt + 1)); // Exponential backoff
+                    } else {
+                        setError(true);
+                        setLoading(false);
+                    }
                 }
-                setLoading(false);
             }
         };
-
+    
+        const fetchContent = async () => {
+            setLoading(true);
+            setError(false);
+            let link = type === "recommendations"
+                ? `${weblink}/${category}/${content_id}/recommendations`
+                : `${weblink}/${type}/${active ? "movies" : "shows"}`;
+    
+            await fetchWithRetry(link);
+        };
+    
         fetchContent();
-
+    
         return () => controller.abort();
     }, [active, type, category, content_id]);
+    
 
     useEffect(() => {
         setTimeout(() => {
@@ -98,14 +109,17 @@ function GetContent({ type, category, content_id }) {
                         <p>Loading...</p>
                     ) : error ? (
                         <p>Failed to fetch content from the API, try reloading....</p>
-                    ) :(
+                    ) : content.length===0 ? (<p>{type} not available...</p>) : (
                         content.map((movie) => (
                             <div 
                                 key={movie.id} 
                                 onClick={() => navigate(`/${movie.media_type || (active ? "movie" : "tv")}/${movie.id}`)}
                                 className="movie">
                                 <img 
-                                    src={movie.poster_path ? `https://image.tmdb.org/t/p/w200/${movie.poster_path}` : "../assets/Poster_Not_Available2.webp"} 
+                                    src={movie.poster_path 
+                                        ? `https://image.tmdb.org/t/p/w200/${movie.poster_path}` 
+                                        : posterAlt}
+                                     
                                     alt={movie.title || movie.name} 
                                 />
                                 <div>

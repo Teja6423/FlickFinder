@@ -10,6 +10,10 @@ h2 {
     margin: 10px 20px;
 }
 
+.scroll-container p{
+    margin: 20px 40px;
+}
+
 .slider-container {
     display: flex;
     align-items: center;
@@ -66,7 +70,7 @@ h2 {
 }
 
 .movie p {
-    margin: 0;
+    margin: 0 10px;
 }
 
 .movie-title {
@@ -118,6 +122,10 @@ h2 {
 
 .arrow.right {
     right: 10px;
+}
+
+p {
+    padding: 0px 5px;
 }
 
 /* Switch Button */
