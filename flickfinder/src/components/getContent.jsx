@@ -34,7 +34,7 @@ function GetContent({ type, category, content_id }) {
                     }
                     console.error(`Error fetching ${url} (Attempt ${attempt + 1}):`, error);
                     if (attempt < retries - 1) {
-                        await delay(delayMs * (attempt + 1)); // Exponential backoff
+                        await delay(delayMs * (attempt + 1));
                     } else {
                         setError(true);
                         setLoading(false);
