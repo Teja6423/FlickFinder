@@ -19,7 +19,7 @@ categories.forEach((category) => {
     Object.entries(types).forEach(([key, value]) => {
         app.get(`/api/${category}/${key}`, async (req, res) => {
             try {
-                let endpoint = `/${value}/${category}`;
+                let endpoint = `/${value}/${category}?region=IN`;
 
                 if (category === "top-rated") endpoint = `/${value}/top_rated`;
                 if (category === "trending") endpoint = `/trending/${value}/week`;
@@ -50,6 +50,17 @@ app.get("/api/:contenttype/:contentid/:category", async (req, res) => {
     }
 });
 
+app.get("api/:contentType/india",async(req,res)=>{
+    const {contenttype} = req.params;
+    try{
+        const response = await api.get(`discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc&with_origin_country=IN`)
+        req.json(response.data)
+    } catch(error){
+        console.error("TMDB API Error fetching content:", error.response?.data || error.message);
+        console.error("Params:", { contenttype });
+
+    }
+})
 
 app.get("/api/movie/:movieid/credits", async (req, res) => {
     const { movieid } = req.params;
