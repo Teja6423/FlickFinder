@@ -1,10 +1,12 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import axios from "axios";
 import "../styles/details.css";
 import profileAlt from "../assets/profile-alt.png";
 import GetContent from "./getContent";
 import ReactPlayer from "react-player/youtube";
+import { Link } from "react-router-dom";
+import { fetchDataWithRetry } from "../api";
+
 
 const weblink = import.meta.env.VITE_API_URL;
 
@@ -19,22 +21,6 @@ function ContentDetails() {
     const [loading, setLoading] = useState(true);
     const [popup, setPopup] = useState(false);
     const [videoPopup, setVideoPopup] = useState(false);
-
-    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-    const fetchDataWithRetry = async (url, retries = 5) => {
-        for (let attempt = 1; attempt <= retries; attempt++) {
-            try {
-                const response = await axios.get(url);
-                return response.data;
-            } catch (error) {
-                console.error(`Attempt ${attempt} failed for ${url}`, error);
-                if (attempt < retries) await delay(500);
-                else console.error(`Failed to fetch after ${retries} attempts: ${url}`);
-            }
-        }
-        return null;
-    };
 
     useEffect(() => {
         const fetchDetails = async () => {
@@ -152,21 +138,24 @@ function ContentDetails() {
                 <div className="cast">
                     {cast && cast.length > 0 ? (
                         cast.map((actor) => (
-                            <div key={actor.id} className="actor">
-                                <img
-                                    id="actor-img"
-                                    src={actor.profile_path ? `https://image.tmdb.org/t/p/w200/${actor.profile_path}` : profileAlt}
-                                    alt={actor.name}
-                                />
-                                <p><b>{actor.name}</b></p>
-                                <p style={{ color: "grey" }}>{actor.character}</p>
-                            </div>
+                            <Link to={`/person/${actor.id}`} key={actor.id} className="actor-link">
+                                <div className="actor">
+                                    <img
+                                        id="actor-img"
+                                        src={actor.profile_path ? `https://image.tmdb.org/t/p/w200/${actor.profile_path}` : profileAlt}
+                                        alt={actor.name}
+                                    />
+                                    <p><b>{actor.name}</b></p>
+                                    <p style={{ color: "grey" }}>{actor.character}</p>
+                                </div>
+                            </Link>
                         ))
                     ) : (
                         <p>Cast data not available...</p>
                     )}
                 </div>
             </div>
+
 
             <div className="contentGallery">
                 <h2>

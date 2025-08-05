@@ -3,18 +3,22 @@ import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import "../styles/navBar.css";
 import FlickFinderLogo from "../assets/FlickFinder-transparant.png";
+import posterAlt from "../assets/Poster_Not_Available2.webp";
 
 const weblink = import.meta.env.VITE_API_URL;
+
 function NavBar() {
     const navigate = useNavigate();
     const [query, setQuery] = useState("");
     const [result, setResult] = useState([]);
     const [showDropdown, setShowDropdown] = useState(false);
+    const [error, setError] = useState(false);
+    const [loading, setLoading] = useState(false);
     const dropdownRef = useRef(null);
     const delayRef = useRef(null);
-    const [error, setError] = useState(false);
-    
+
     const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
     const fetchDataWithRetry = async (url, retries = 5) => {
         for (let attempts = 1; attempts <= retries; attempts++) {
             try {
@@ -22,7 +26,6 @@ function NavBar() {
                 return response.data;
             } catch (error) {
                 console.log(`Attempt ${attempts} failed for ${url}`, error);
-    
                 if (attempts < retries) {
                     await delay(500);
                 } else {
@@ -40,43 +43,39 @@ function NavBar() {
         if (!query.trim()) {
             setResult([]);
             setShowDropdown(false);
-            setError(false); 
+            setError(false);
             return;
         }
 
         delayRef.current = setTimeout(() => {
             const fetchResults = async () => {
-                
+                    try {
+                        setLoading(true);
+                        setError(false);
+                        setShowDropdown(true);
 
-                try {
-                    const response = await fetchDataWithRetry(`${weblink}/search/multi?query=${encodeURIComponent(query)}`);
-                    setResult(response.results);
-                    setShowDropdown(response.results.length > 0);
-                    setShowDropdown(true);
-                    setError(false);
-                } catch (error) {
-                    console.error(`Error getting search result: ${error.message}`);
-                    setError(true);
-                    setShowDropdown(true);
-                }
+                        const response = await fetchDataWithRetry(`${weblink}/search/multi?query=${encodeURIComponent(query)}`);
+                        setResult(response.results);
+                    } catch (error) {
+                        console.error(`Error getting search result: ${error.message}`);
+                        setError(true);
+                        setShowDropdown(true);
+                    } finally {
+                        setLoading(false);
+                    }
             };
             fetchResults();
         }, 900);
 
         return () => clearTimeout(delayRef.current);
-    }, [query,]);
+    }, [query]);
 
-    useEffect(()=>{
-        console.log(result)
-        console.log(error)
-    },[result,error])
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setShowDropdown(false);
             }
         };
-
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
@@ -85,9 +84,6 @@ function NavBar() {
         <div className="nav-bar">
             <div className="nav-buttons">
                 <Link to="/"><img src={FlickFinderLogo} alt="FlickFinder Logo" /></Link>
-                <button type="button">Movies</button>
-                <button type="button">TV Shows</button>
-                <button type="button">People</button>
             </div>
             <div className="search-bar">
                 <div className="search-container">
@@ -103,18 +99,51 @@ function NavBar() {
                         <div className="showSearchResult" ref={dropdownRef}>
                             <ul>
                                 {error ? (
-                                    <p style={{ color: "red" }}>API Error: search again...</p>
+                                    <p style={{ color: "red", padding: "10px" }}>API Error: search again...</p>
+                                ) : loading ? (
+                                    <p style={{ padding: "10px" }}>Loading...</p>
                                 ) : result.length > 0 ? (
                                     result.map((item) => (
-                                        <li key={item.id} onClick={() => {
-                                            navigate(`/${item.media_type}/${item.id}`);
-                                            setShowDropdown(false);
-                                        }}>
-                                            {item.title || item.name}, {item.media_type}, {item.first_air_date?.split("-")[0] || item.release_date?.split("-")[0] || "N/A"}
+                                        <li
+                                            key={item.id}
+                                            onClick={() => {
+                                                navigate(`/${item.media_type}/${item.id}`);
+                                                setShowDropdown(false);
+                                            }}
+                                            style={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: "12px",
+                                                padding: "8px",
+                                                borderBottom: "1px solid #eee",
+                                                cursor: "pointer",
+                                            }}
+                                        >
+                                            <img
+                                                src={item.poster_path
+                                                    ? `https://image.tmdb.org/t/p/w92/${item.poster_path}`
+                                                    : posterAlt}
+                                                alt={item.title || item.name}
+                                                style={{
+                                                    width: "50px",
+                                                    height: "75px",
+                                                    objectFit: "cover",
+                                                    borderRadius: "4px",
+                                                }}
+                                            />
+                                            <div>
+                                                <p style={{ margin: 0, fontWeight: 600 }}>{item.title || item.name}</p>
+                                                <p style={{ margin: 0, fontSize: "0.85rem", color: "#666" }}>
+                                                    {item.media_type.charAt(0).toUpperCase() + item.media_type.slice(1)},{" "}
+                                                    {item.first_air_date?.split("-")[0] ||
+                                                        item.release_date?.split("-")[0] ||
+                                                        "N/A"}
+                                                </p>
+                                            </div>
                                         </li>
                                     ))
                                 ) : (
-                                    <p>No results found...</p>
+                                    <p style={{ padding: "10px" }}>No results found...</p>
                                 )}
                             </ul>
                         </div>

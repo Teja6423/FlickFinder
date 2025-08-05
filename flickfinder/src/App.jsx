@@ -4,6 +4,7 @@ import NavBar from './components/navBar';
 import HomePage from './components/homepage';
 import './styles/style.css';
 import ContentDetails from './components/contentDetails';
+import PersonDetails from './components/personDetails';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/:type/:id" element={<ContentDetails />} />
+          <Route path="/person/:personId" element={<PersonDetails />} />
         </Routes>
       </div>
     </Router>

@@ -1,0 +1,99 @@
+.person-details {
+  width: 1200px;
+  margin: 2rem auto;
+  padding: 1rem;
+  color: #f0f0f0;
+  background-color: #121212;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Profile Section */
+.profile-header {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.profile-header img {
+  width: 200px;
+  height: auto;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.bio {
+  flex: 1;
+  min-width: 280px;
+}
+
+.bio h2 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.bio p {
+  margin: 0.25rem 0;
+  line-height: 1.5;
+  color: #ccc;
+}
+
+/* Credits Section */
+.credits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.credit-card {
+  background-color: #1e1e1e;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-align: center;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.credit-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+}
+
+.credit-card img {
+  width: 100%;
+  height: 225px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.credit-card p {
+  font-size: 0.85rem;
+  margin: 0.25rem 0;
+  color: #eee;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .profile-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .bio {
+    min-width: unset;
+  }
+
+  .credit-card img {
+    height: 200px;
+  }
+}
