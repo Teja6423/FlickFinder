@@ -1,0 +1,13 @@
+.homepage-container {
+    display: flex;
+    flex-direction: column;
+    color: white;
+    gap: 2rem;
+    padding: 1rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    background-color: transparent; /* or transparent if your body already has background */
+}
+h1, h2 {
+    color: #f0f0f0;
+}

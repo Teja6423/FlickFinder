@@ -84,12 +84,6 @@ h2 {
     word-wrap: break-word;
 }
 
-
-.movie-title:hover {
-    color: blue;
-    transition: 100ms;
-}
-
 .movie-r-date {
     font-weight: 300;
     font-size: small;
@@ -98,7 +92,7 @@ h2 {
 
 /* Navigation Buttons */
 .arrow {
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(128, 128, 128, 0.3);
     color: white;
     border: none;
     font-size: 24px;
@@ -144,7 +138,7 @@ p {
 }
 
 .switchButton.active {
-    color: black;
+    color: white;
     text-decoration: underline;
 }
 @media (max-width: 1000px) {

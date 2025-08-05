@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import GetContent from './getContent';
+import "../styles/homepage.css";
 
 export default function HomePage() {
     const [showTrending, setShowTrending] = useState(false);
@@ -19,10 +20,10 @@ export default function HomePage() {
     }, []);
 
     return (
-        <>
+        <div className="homepage-container">
             {showTrending && <GetContent type="trending" />}
             {showPopular && <GetContent type="popular" />}
             {showTopRated && <GetContent type="top-rated" />}
-        </>
+        </div>
     );
 }
