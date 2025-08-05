@@ -49,20 +49,28 @@ function NavBar() {
 
         delayRef.current = setTimeout(() => {
             const fetchResults = async () => {
-                    try {
-                        setLoading(true);
-                        setError(false);
-                        setShowDropdown(true);
+                try {
+                    setLoading(true);
+                    setError(false);
+                    setShowDropdown(true);
 
-                        const response = await fetchDataWithRetry(`${weblink}/search/multi?query=${encodeURIComponent(query)}`);
-                        setResult(response.results);
-                    } catch (error) {
-                        console.error(`Error getting search result: ${error.message}`);
-                        setError(true);
-                        setShowDropdown(true);
-                    } finally {
-                        setLoading(false);
-                    }
+                    const response = await fetchDataWithRetry(
+                        `${weblink}/search/multi?query=${encodeURIComponent(query)}`
+                    );
+
+                    // Sort by popularity
+                    const sortedResults = [...response.results].sort(
+                        (a, b) => (b.popularity || 0) - (a.popularity || 0)
+                    );
+
+                    setResult(sortedResults);
+                } catch (error) {
+                    console.error(`Error getting search result: ${error.message}`);
+                    setError(true);
+                    setShowDropdown(true);
+                } finally {
+                    setLoading(false);
+                }
             };
             fetchResults();
         }, 900);
@@ -120,9 +128,15 @@ function NavBar() {
                                             }}
                                         >
                                             <img
-                                                src={item.poster_path
-                                                    ? `https://image.tmdb.org/t/p/w92/${item.poster_path}`
-                                                    : posterAlt}
+                                                src={
+                                                    item.media_type === "person"
+                                                        ? (item.profile_path
+                                                            ? `https://image.tmdb.org/t/p/w92/${item.profile_path}`
+                                                            : posterAlt) // fallback if no profile picture
+                                                        : (item.poster_path
+                                                            ? `https://image.tmdb.org/t/p/w92/${item.poster_path}`
+                                                            : posterAlt) // fallback if no poster
+                                                }
                                                 alt={item.title || item.name}
                                                 style={{
                                                     width: "50px",
@@ -134,10 +148,12 @@ function NavBar() {
                                             <div>
                                                 <p style={{ margin: 0, fontWeight: 600 }}>{item.title || item.name}</p>
                                                 <p style={{ margin: 0, fontSize: "0.85rem", color: "#666" }}>
-                                                    {item.media_type.charAt(0).toUpperCase() + item.media_type.slice(1)},{" "}
-                                                    {item.first_air_date?.split("-")[0] ||
+                                                    {item.media_type.charAt(0).toUpperCase() + item.media_type.slice(1)}
+                                                    {item.media_type !== "person" && (
+                                                        `, ${item.first_air_date?.split("-")[0] ||
                                                         item.release_date?.split("-")[0] ||
-                                                        "N/A"}
+                                                        "N/A"}`
+                                                    )}
                                                 </p>
                                             </div>
                                         </li>
