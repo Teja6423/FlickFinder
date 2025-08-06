@@ -8,7 +8,7 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT;
 const corsOptions = {
-    origin: `http://localhost:${process.env.REACTPORT}`
+    origin: process.env.REACTPORT
 };
 app.use(cors(corsOptions));
 
