@@ -8,9 +8,9 @@ export default function HomePage() {
     const [showTopRated, setShowTopRated] = useState(false);
 
     useEffect(() => {
-        const timer1 = setTimeout(() => setShowTrending(true), 0);
-        const timer2 = setTimeout(() => setShowPopular(true), 250);
-        const timer3 = setTimeout(() => setShowTopRated(true), 500);
+        const timer1 = setTimeout(() => setShowTrending(true), 50);
+        const timer2 = setTimeout(() => setShowPopular(true), 100);
+        const timer3 = setTimeout(() => setShowTopRated(true), 150);
 
         return () => {
             clearTimeout(timer1);

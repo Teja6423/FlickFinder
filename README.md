@@ -1,61 +1,67 @@
-To update the code to the latest version on Raspberry Pi, run - /home/teja/update_flickfinder.sh
-That .sh file contains the code below
+# 🎬 FlickFinder
 
-#!/bin/bash
-cd /home/teja/FlickFinder || exit
+FlickFinder is a movie, TV show, and people search platform powered by the [TMDb API](https://www.themoviedb.org/documentation/api).  
+It features a dark-themed interface, responsive design, and allows users to explore trending content, popular titles, detailed cast information, and more.
 
-# Backup vite.config.js before resetting
-cp flickfinder/vite.config.js /tmp/vite.config.js.bak
+---
 
-# Pull latest changes but keep .env files
-git fetch origin main
-git reset --hard origin/main
-git clean -fd \
-  -e .env \
-  -e .env.local \
-  -e .env.development \
-  -e .env.production \
-  -e vite.config.js
+## ✨ Features
+- Dark-themed UI
+- Trending, Popular, Now Playing, and Upcoming content
+- Movie & TV detail pages with cast, crew, trailers, and posters
+- People detail pages with biography, credits, and images
+- Search across movies, shows, and people
+- Responsive design for desktop and mobile
 
-# Restore vite.config.js
-cp /tmp/vite.config.js.bak flickfinder/vite.config.js
+---
 
-# Install dependencies
+## 🛠 Tech Stack
+- **Frontend**: React + Vite
+- **Backend**: Node.js + Express
+- **API**: TMDb API
+- **Hosting**: Raspberry Pi + Cloudflare Tunnel + PM2
+
+---
+
+## 📦 Local Setup
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/your-username/FlickFinder.git
+cd FlickFinder
+```
+
+### 2. Install dependencies
+```bash
+# Backend
+cd backend
 npm install
 
-# Restart the app
-pm2 restart flickfinder
+# Frontend
+cd flickfinder
+npm install
+```
 
-----------------------------------------------------------------------------------------------------------------------
+### 3. Create `.env` files
+**Backend `.env`**
+```
+TMDB_BEARER_KEY=your_tmdb_api_key_here
+PORT=3131
+REACTPORT=http://localhost:5173
+```
 
-Add REACTPORT="https://flickfinder.tejachevuru.in/" , to the .env in the backend.
-Add VITE_API_URL = https://apiflick.tejachevuru.in/api , to the .env in the flickfinder.
+**Frontend `.env`**
+```
+VITE_API_URL=http://localhost:3131/api
+```
 
-----------------------------------------------------------------------------------------------------------------------
+### 4. Run the app
+```bash
+# Start backend
+cd server
+npm start
 
-Add the bottom code in the vite.config file in the flickfinder
-
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    allowedHosts: ['flickfinder.tejachevuru.in', 'localhost']
-  }
-});
-
-----------------------------------------------------------------------------------------------------------------------
-
-Make sure the vite version is vite@4.5.0
-to check - npm list -g vite
-If not - vite@4.5.0 then uninstall vite and install vite@4.5.0 by below commands -
-npm uninstall vite
-npm install vite@4.5.0
-
-To check if Vite is supported run - npx vite
-If it shows "Illegal instruction" try reinstalling vite again.
-
-----------------------------------------------------------------------------------------------------------------------
-
-To run the code, go to the root directory and run - npm start 
+# Start frontend
+cd ../flickfinder
+npm run dev
+```
