@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import "../styles/popular-content.css";
 import posterAlt from "../assets/Poster_Not_Available2.webp";
 
 

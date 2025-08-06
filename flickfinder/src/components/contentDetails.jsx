@@ -1,6 +1,5 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import "../styles/details.css";
 import profileAlt from "../assets/profile-alt.png";
 import GetContent from "./getContent";
 import ReactPlayer from "react-player/youtube";

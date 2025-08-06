@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
-import "../styles/navBar.css";
 import FlickFinderLogo from "../assets/FlickFinder-transparant.png";
 import posterAlt from "../assets/Poster_Not_Available2.webp";
 

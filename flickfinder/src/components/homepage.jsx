@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import GetContent from './getContent';
-import "../styles/homePage.css";
 
 export default function HomePage() {
     const [showTrending, setShowTrending] = useState(false);
