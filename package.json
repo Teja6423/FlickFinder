@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "start": "npm run build-client && concurrently \"npm run server\" \"npm run client\"",
     "server": "cd backend && npm start",
     "client": "cd flickfinder && npm start",
+    "build-client": "cd flickfinder && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -14,8 +15,5 @@
   "license": "ISC",
   "devDependencies": {
     "concurrently": "^9.1.2"
-  },
-  "dependencies": {
-    "flickfinder": "file:"
   }
 }
