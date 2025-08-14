@@ -27,7 +27,7 @@ It features a dark-themed interface, responsive design, and allows users to expl
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/your-username/FlickFinder.git
+git clone https://github.com/Teja6423/FlickFinder.git
 cd FlickFinder
 ```
 
