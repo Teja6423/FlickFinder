@@ -86,7 +86,7 @@ const PersonDetails = () => {
                     <p>
                         {isMobile && !expanded ? shortBio : bioText}
                     </p>
-                    {isMobile && bioText.length > 200 && (
+                    {isMobile && bioText.length > 400 && (
                         <button
                             className="see-more-btn"
                             onClick={() => setExpanded(!expanded)}
