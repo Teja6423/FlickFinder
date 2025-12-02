@@ -66,6 +66,8 @@ h1:hover, h2:hover {
     gap: 10px;
 }
 
+
+
 /* ====== POSTER IMAGE ====== */
 #poster {
     border-radius: 10px;
@@ -883,6 +885,144 @@ html, body {
 }
 /* ===== END: popular-content.css ===== */
 
+/* ===== START: Skeleton.css ===== */
+/* Skeleton base + shimmer */
+.skeleton {
+  position: relative;
+  background-color: #2a2a2a;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.skeleton::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: loading 1.2s infinite;
+}
+
+/* ===== Poster & Details ===== */
+.poster {
+  width: 200px;
+  height: 300px;
+  border-radius: 10px;
+}
+
+.title {
+  width: 60%;
+  height: 28px;
+  margin-bottom: 12px;
+  border-radius: 5px;
+}
+
+.overview {
+  width: 90%;
+  height: 16px;
+  margin-bottom: 6px;
+}
+
+.overview.short {
+  width: 50%;
+}
+
+.details .meta {
+  width: 120px;
+  height: 16px;
+  margin-right: 10px;
+  margin-bottom: 6px;
+  display: inline-block;
+}
+
+.trailer-btn {
+  width: 100px;
+  height: 35px;
+  border-radius: 10px;
+  margin-top: 8px;
+}
+
+/* ===== Cast Skeleton ===== */
+.skeleton-actor {
+  margin: 0 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.actor-img {
+  width: 150px; /* matches #actor-img max-width */
+  height: 225px; /* matches height of real actor card */
+  border-radius: 10px;
+  margin-bottom: 5px;
+}
+
+.actor-name {
+  width: 100px;
+  height: 16px;
+  margin-bottom: 3px;
+}
+
+.actor-role {
+  width: 80px;
+  height: 14px;
+}
+
+/* ===== Gallery Skeleton ===== */
+.gallery-image {
+  width: 300px; /* matches real gallery image width */
+  height: 200px; /* matches .image height */
+  margin: 10px;
+  border-radius: 8px;
+}
+
+/* ===== Recommendations / Movie Slider Skeleton ===== */
+.skeleton.movie-card {
+  width: 180px; /* matches .movie img max-width */
+  height: 250px; /* matches .movie img max-height */
+  margin-right: 10px;
+  border-radius: 10px;
+}
+
+/* ===== Shimmer Animation ===== */
+@keyframes loading {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* ===== END: Skeleton.css ===== */
+
+
+/* ===== START: tmdb.css ===== */
+.tmdb-note {
+    width: 100%;
+    text-align: center;
+    padding: 20px 10px;
+    margin-top: 40px;
+
+    font-size: 14px;
+    color: #7fa3c6;
+
+    border-top: 1px solid #0a2a43;
+    background: rgba(0, 20, 40, 0.3);
+
+    font-family: Poppins, sans-serif;
+}
+
+.tmdb-note span {
+    color: #3ec2f3;
+    font-weight: 500;
+}
+
+/* ===== END: tmdb.css ===== */
+
 /* ===== START: style.css ===== */
 html, body {
     height: 100%;
@@ -906,6 +1046,9 @@ html, body {
     justify-content: flex-start;
     height: auto; 
     min-height: 100vh; 
+}
+.container > *:nth-child(2) {
+    flex-grow: 1;            /* make the Routes area push footer down */
 }
 
 @media (max-width:1000px){

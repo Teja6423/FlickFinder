@@ -4,6 +4,7 @@ import NavBar from './components/navBar';
 import HomePage from './components/homepage';
 import ContentDetails from './components/contentDetails';
 import PersonDetails from './components/personDetails';
+import TMDbNote from './components/TMDbNote';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="/:type/:id" element={<ContentDetails />} />
           <Route path="/person/:personId" element={<PersonDetails />} />
         </Routes>
+        <TMDbNote />
       </div>
     </Router>
   );

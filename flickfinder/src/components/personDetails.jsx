@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { fetchDataWithRetry } from '../api';
 import profileAlt from '../assets/profile-alt.png';
+import Skeleton from './skeleton';
 
 const PersonDetails = () => {
     const { personId } = useParams();
@@ -20,17 +21,19 @@ const PersonDetails = () => {
     useEffect(() => {
         const getPersonData = async () => {
             try {
-                const personDetails = await fetchDataWithRetry(`${weblink}/person/${personId}`);
-                setPerson(personDetails);
+            const [personDetails, combinedCredits, imagesData] = await Promise.all([
+                fetchDataWithRetry(`${weblink}/person/${personId}`),
+                fetchDataWithRetry(`${weblink}/person/${personId}/combined_credits`),
+                fetchDataWithRetry(`${weblink}/person/${personId}/images`)
+            ]);
 
-                const combinedCredits = await fetchDataWithRetry(`${weblink}/person/${personId}/combined_credits`);
-                setCredits((combinedCredits.cast || []).sort((a, b) => {
-                    const dateA = new Date(a.release_date || a.first_air_date || '1900-01-01');
-                    const dateB = new Date(b.release_date || b.first_air_date || '1900-01-01');
-                    return dateB - dateA;
-                }));
+            setPerson(personDetails);
 
-                const imagesData = await fetchDataWithRetry(`${weblink}/person/${personId}/images`);
+            setCredits((combinedCredits.cast || []).sort((a, b) => {
+                const dateA = new Date(a.release_date || a.first_air_date || '1900-01-01');
+                const dateB = new Date(b.release_date || b.first_air_date || '1900-01-01');
+                return dateB - dateA;
+            }));
                 setImages(imagesData.profiles || []);
 
             } catch (err) {
@@ -61,7 +64,7 @@ const PersonDetails = () => {
     };
 
     if (error) return <p>Error loading person details. Please try again later.</p>;
-    if (!person) return <p>Loading...</p>;
+    if (!person) return <Skeleton type="person-details"/>
 
     const bioText = person.biography || "No biography available.";
     const shortBio = bioText.length > 400 ? bioText.substring(0, 400) + "..." : bioText;

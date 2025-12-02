@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import profileAlt from "../assets/profile-alt.png";
 import GetContent from "./getContent";
 import ReactPlayer from "react-player/youtube";
+import Skeleton from "./skeleton";
 import { Link } from "react-router-dom";
 import { fetchDataWithRetry } from "../api";
 
@@ -75,7 +76,7 @@ function ContentDetails() {
         setYtTrailer(null);
     };
 
-    if (loading) return <p>Loading details...</p>;
+    if (loading) return <Skeleton type="content-details"/>;
     if (!content) return <p>Content not found. Might be an API error, try reloading...</p>;
 
     return (

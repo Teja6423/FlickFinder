@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import posterAlt from "../assets/Poster_Not_Available2.webp";
+import Skeleton from "./skeleton";
 
 
 const weblink = import.meta.env.VITE_API_URL;
@@ -105,7 +106,7 @@ function GetContent({ type, category, content_id }) {
                 <button className="arrow left" onClick={() => scroll("left")}>&#8249;</button>
                 <div className="scroll-container" ref={scrollRef}>
                     {loading ? (
-                        <p>Loading...</p>
+                        <Skeleton type="slider" />
                     ) : error ? (
                         <p>Failed to fetch content from the API, try reloading....</p>
                     ) : content.length===0 ? (<p>{type} not available...</p>) : (
