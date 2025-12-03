@@ -4,7 +4,7 @@ import NavBar from './components/navBar';
 import HomePage from './components/homepage';
 import ContentDetails from './components/contentDetails';
 import PersonDetails from './components/personDetails';
-import TMDbNote from './components/TMDbNote';
+import TMDbNote from './components/tmdbNote';
 
 function App() {
   return (
