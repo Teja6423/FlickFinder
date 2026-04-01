@@ -16,33 +16,51 @@ app.use(cors(corsOptions));
 
 /* -------------------- SIMPLE IN-MEMORY CACHE -------------------- */
 const cache = new Map();
-const CACHE_TTL = 1000 * 60 * 60 * 6; // 6 hours
+const CACHE_TTL_DEFAULT = 1000 * 60 * 60 * 6; // 6 hours for content
+const CACHE_TTL_SEARCH  = 1000 * 60 * 30;      // 30 min for search results
 const MAX_CACHE_SIZE = 500;
 
 function getCached(key) {
-    const cached = cache.get(key);
-    if (!cached) return null;
-    if (Date.now() > cached.expiry) {
+    const entry = cache.get(key);
+    if (!entry) return null;
+    if (Date.now() > entry.expiry) {
         cache.delete(key);
         return null;
     }
-    return cached.data;
+    // LRU: move to end on access
+    cache.delete(key);
+    cache.set(key, entry);
+    return entry.data;
 }
 
-function setCache(key, data) {
+function setCache(key, data, ttl = CACHE_TTL_DEFAULT) {
     if (cache.size >= MAX_CACHE_SIZE) {
+        // Evict least-recently-used (first inserted after LRU moves)
         cache.delete(cache.keys().next().value);
     }
-    cache.set(key, { data, expiry: Date.now() + CACHE_TTL });
+    cache.set(key, { data, expiry: Date.now() + ttl });
 }
 
-async function fetchWithCache(endpoint) {
+const tmdbDelay = (ms) => new Promise((r) => setTimeout(r, ms));
+
+async function fetchWithCache(endpoint, ttl = CACHE_TTL_DEFAULT) {
     const cached = getCached(endpoint);
     if (cached) return cached;
 
-    const response = await api.get(endpoint);
-    setCache(endpoint, response.data);
-    return response.data;
+    let lastError;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+            const response = await api.get(endpoint);
+            setCache(endpoint, response.data, ttl);
+            return response.data;
+        } catch (err) {
+            lastError = err;
+            // Don't retry on client errors (4xx), only on network/server failures
+            if (err.response?.status && err.response.status < 500) throw err;
+            if (attempt < 3) await tmdbDelay(600 * attempt); // 600ms, 1200ms
+        }
+    }
+    throw lastError;
 }
 /* ---------------------------------------------------------------- */
 
@@ -121,7 +139,7 @@ app.get("/api/search/multi", async (req, res) => {
     if (!search_item) return res.status(400).json({ error: "Search query is required" });
 
     try {
-        const data = await fetchWithCache(`/search/multi?query=${encodeURIComponent(search_item)}`);
+        const data = await fetchWithCache(`/search/multi?query=${encodeURIComponent(search_item)}`, CACHE_TTL_SEARCH);
         res.json(data);
     } catch (error) {
         console.error("TMDB API Error searching:", error.response?.data || error.message);
