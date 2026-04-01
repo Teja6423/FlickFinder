@@ -17,6 +17,7 @@ app.use(cors(corsOptions));
 /* -------------------- SIMPLE IN-MEMORY CACHE -------------------- */
 const cache = new Map();
 const CACHE_TTL = 1000 * 60 * 60 * 6; // 6 hours
+const MAX_CACHE_SIZE = 500;
 
 function getCached(key) {
     const cached = cache.get(key);
@@ -29,6 +30,9 @@ function getCached(key) {
 }
 
 function setCache(key, data) {
+    if (cache.size >= MAX_CACHE_SIZE) {
+        cache.delete(cache.keys().next().value);
+    }
     cache.set(key, { data, expiry: Date.now() + CACHE_TTL });
 }
 

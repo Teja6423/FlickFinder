@@ -50,12 +50,20 @@ const Skeleton = ({ type }) => {
           </div>
 
           {/* Recommendations Skeleton */}
-          <div className="recommendations">
+          <div className="popular-movies">
             <h2>Recommendations</h2>
             <div className="slider-container">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="skeleton movie-card"></div>
-              ))}
+              <div className="scroll-container">
+                {[...Array(8)].map((_, i) => (
+                  <div key={i} className="skeleton-card">
+                    <div className="skeleton movie-poster-wrap"></div>
+                    <div className="skeleton-card-info">
+                      <div className="skeleton skel-title"></div>
+                      <div className="skeleton skel-date"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -103,11 +111,17 @@ const Skeleton = ({ type }) => {
     
     case "slider":
       return (
-        <div className="slider-container">
-          {[...Array(20)].map((_, j) => (
-            <div key={j} className="skeleton movie-card"></div>
+        <>
+          {[...Array(10)].map((_, j) => (
+            <div key={j} className="skeleton-card">
+              <div className="skeleton movie-poster-wrap"></div>
+              <div className="skeleton-card-info">
+                <div className="skeleton skel-title"></div>
+                <div className="skeleton skel-date"></div>
+              </div>
+            </div>
           ))}
-        </div>
+        </>
       );
 
     default:

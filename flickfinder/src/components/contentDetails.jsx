@@ -1,10 +1,10 @@
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import profileAlt from "../assets/profile-alt.png";
+import posterAlt from "../assets/Poster_Not_Available2.webp";
 import GetContent from "./getContent";
 import ReactPlayer from "react-player/youtube";
 import Skeleton from "./skeleton";
-import { Link } from "react-router-dom";
 import { fetchDataWithRetry } from "../api";
 
 
@@ -23,13 +23,19 @@ function ContentDetails() {
     const [videoPopup, setVideoPopup] = useState(false);
 
     useEffect(() => {
+        const controller = new AbortController();
+
         const fetchDetails = async () => {
             setLoading(true);
 
-            const details = await fetchDataWithRetry(`${weblink}/${type}/${id}`);
-            const castData = await fetchDataWithRetry(`${weblink}/${type}/${id}/credits`);
-            const images = await fetchDataWithRetry(`${weblink}/${type}/${id}/images`);
-            const videos = await fetchDataWithRetry(`${weblink}/${type}/${id}/videos`);
+            const [details, castData, images, videos] = await Promise.all([
+                fetchDataWithRetry(`${weblink}/${type}/${id}`, 5, controller.signal),
+                fetchDataWithRetry(`${weblink}/${type}/${id}/credits`, 5, controller.signal),
+                fetchDataWithRetry(`${weblink}/${type}/${id}/images`, 5, controller.signal),
+                fetchDataWithRetry(`${weblink}/${type}/${id}/videos`, 5, controller.signal),
+            ]);
+
+            if (controller.signal.aborted) return;
 
             setContent(details);
             setCast(castData?.cast || null);
@@ -49,7 +55,7 @@ function ContentDetails() {
         };
 
         fetchDetails();
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        return () => controller.abort();
     }, [type, id]);
 
     useEffect(() => {
@@ -97,36 +103,37 @@ function ContentDetails() {
                     <div>
                         <img
                             id="poster"
-                            src={`https://image.tmdb.org/t/p/w200/${content.poster_path}`}
-                            alt="Poster Not Available..."
+                            src={content.poster_path ? `https://image.tmdb.org/t/p/w342/${content.poster_path}` : posterAlt}
+                            alt={content.title || content.name}
                         />
                     </div>
                     <div id="details">
                         <h2>{content.title || content.name}</h2>
-                        <p>{content.overview}</p>
+                        {content.genres?.length > 0 && (
+                            <div className="genre-chips">
+                                {content.genres.map(g => (
+                                    <span key={g.id} className="genre-chip">{g.name}</span>
+                                ))}
+                            </div>
+                        )}
+                        <p className="overview-text">{content.overview}</p>
                         <div className="details">
-                            <p><b>Release Date:</b> {content.release_date || content.first_air_date}</p>
-                            <p><b>Rating:</b> {content.vote_average}/10</p>
+                            <p><b>Release Date:</b> {content.release_date || content.first_air_date || "N/A"}</p>
+                            <p><span className="rating-badge">★ {content.vote_average?.toFixed(1) ?? "N/A"}</span> / 10</p>
                             <p>
                                 {type === "movie" ? (
-                                    <>
-                                        <b>Runtime:</b> {content.runtime ? `${content.runtime} min` : "N/A"}
-                                    </>
+                                    <><b>Runtime:</b> {content.runtime ? `${content.runtime} min` : "N/A"}</>
                                 ) : (
-                                    <>
-                                        <b>Episodes:</b> {content.number_of_episodes}
-                                    </>
+                                    <><b>Episodes:</b> {content.number_of_episodes ?? "N/A"}</>
                                 )}
                             </p>
                             {trailer && (
-                                <p key={trailer.id}>
-                                    <button
-                                        className="watch_trailer"
-                                        onClick={() => openVideoPlayer(`https://www.youtube.com/watch?v=${trailer.key}`)}
-                                    >
-                                        Trailer
-                                    </button>
-                                </p>
+                                <button
+                                    className="watch_trailer"
+                                    onClick={() => openVideoPlayer(`https://www.youtube.com/watch?v=${trailer.key}`)}
+                                >
+                                    Trailer
+                                </button>
                             )}
                         </div>
                     </div>
@@ -140,13 +147,17 @@ function ContentDetails() {
                         cast.map((actor) => (
                             <Link to={`/person/${actor.id}`} key={actor.id} className="actor-link">
                                 <div className="actor">
-                                    <img
-                                        id="actor-img"
-                                        src={actor.profile_path ? `https://image.tmdb.org/t/p/w200/${actor.profile_path}` : profileAlt}
-                                        alt={actor.name}
-                                    />
-                                    <p><b>{actor.name}</b></p>
-                                    <p style={{ color: "grey" }}>{actor.character}</p>
+                                    <div className="actor-photo-wrap">
+                                        <img
+                                            className="actor-photo"
+                                            src={actor.profile_path ? `https://image.tmdb.org/t/p/w185/${actor.profile_path}` : profileAlt}
+                                            alt={actor.name}
+                                        />
+                                    </div>
+                                    <div className="actor-info">
+                                        <p className="actor-name-text">{actor.name}</p>
+                                        <p className="actor-character-text">{actor.character}</p>
+                                    </div>
                                 </div>
                             </Link>
                         ))
@@ -159,7 +170,7 @@ function ContentDetails() {
 
             <div className="contentGallery">
                 <h2>
-                    {type} Gallery - <span style={{ color: "grey" }}>{gallery ? gallery.length : 0}</span>
+                    Gallery <span className="gallery-count">{gallery?.length ?? 0} images</span>
                 </h2>
                 <div className="images">
                     {gallery && gallery.length > 0 ? (
@@ -180,21 +191,21 @@ function ContentDetails() {
                 </div>
             </div>
 
-            <div>
-                <GetContent type={"recommendations"} category={type} content_id={id} />
-            </div>
+            <GetContent type={"recommendations"} category={type} content_id={id} />
 
             {popup && (
-                <div className="popupImage">
-                    <button className="popup_close_button" onClick={closeImageModal}>X</button>
-                    <img src={selectedImage} alt="Image Not Available" />
+                <div className="popupImage" onClick={closeImageModal}>
+                    <button className="popup_close_button" onClick={closeImageModal}>✕</button>
+                    <img src={selectedImage} alt="Image Not Available" onClick={(e) => e.stopPropagation()} />
                 </div>
             )}
 
             {videoPopup && (
-                <div className="VideoPlayer">
-                    <button className="popup_close_button" onClick={closeVideoPlayer}>X</button>
-                    <ReactPlayer className="trailer-player" url={ytTrailer} controls playing />
+                <div className="VideoPlayer" onClick={closeVideoPlayer}>
+                    <button className="popup_close_button" onClick={closeVideoPlayer}>✕</button>
+                    <div className="trailer-wrapper" onClick={(e) => e.stopPropagation()}>
+                        <ReactPlayer className="trailer-player" url={ytTrailer} controls playing width="100%" height="100%" />
+                    </div>
                 </div>
             )}
         </div>

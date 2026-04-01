@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
-import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import FlickFinderLogo from "../assets/FlickFinder-transparant.png";
 import posterAlt from "../assets/Poster_Not_Available2.webp";
+import { fetchDataWithRetry } from "../api";
 
 const weblink = import.meta.env.VITE_API_URL;
 
@@ -15,26 +15,6 @@ function NavBar() {
     const [loading, setLoading] = useState(false);
     const dropdownRef = useRef(null);
     const delayRef = useRef(null);
-
-    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-    const fetchDataWithRetry = async (url, retries = 5) => {
-        for (let attempts = 1; attempts <= retries; attempts++) {
-            try {
-                const response = await axios.get(url);
-                return response.data;
-            } catch (error) {
-                console.log(`Attempt ${attempts} failed for ${url}`, error);
-                if (attempts < retries) {
-                    await delay(500);
-                } else {
-                    console.error(`Failed to fetch after ${retries} attempts: ${url}`);
-                    throw new Error(`Failed to fetch data from ${url} after ${retries} attempts`);
-                }
-            }
-        }
-        return null;
-    };
 
     useEffect(() => {
         if (delayRef.current) clearTimeout(delayRef.current);
@@ -56,6 +36,11 @@ function NavBar() {
                     const response = await fetchDataWithRetry(
                         `${weblink}/search/multi?query=${encodeURIComponent(query)}`
                     );
+
+                    if (!response) {
+                        setError(true);
+                        return;
+                    }
 
                     // Sort by popularity
                     const sortedResults = [...response.results].sort(
@@ -92,7 +77,14 @@ function NavBar() {
             <div className="nav-buttons">
                 <Link to="/"><img src={FlickFinderLogo} alt="FlickFinder Logo" /></Link>
             </div>
-            <div className="search-bar">
+            <form
+                className="search-bar"
+                ref={dropdownRef}
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    if (query.trim()) setShowDropdown(true);
+                }}
+            >
                 <div className="search-container">
                     <input
                         value={query}
@@ -100,10 +92,9 @@ function NavBar() {
                         placeholder="Search..."
                         onChange={(e) => setQuery(e.target.value)}
                         onFocus={() => query.trim() && setShowDropdown(true)}
-                        onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
                     />
                     {showDropdown && (
-                        <div className="showSearchResult" ref={dropdownRef}>
+                        <div className="showSearchResult">
                             <ul>
                                 {error ? (
                                     <p style={{ color: "red", padding: "10px" }}>API Error: search again...</p>
@@ -117,36 +108,22 @@ function NavBar() {
                                                 navigate(`/${item.media_type}/${item.id}`);
                                                 setShowDropdown(false);
                                             }}
-                                            style={{
-                                                display: "flex",
-                                                alignItems: "center",
-                                                gap: "12px",
-                                                padding: "8px",
-                                                borderBottom: "1px solid #eee",
-                                                cursor: "pointer",
-                                            }}
                                         >
                                             <img
                                                 src={
                                                     item.media_type === "person"
                                                         ? (item.profile_path
                                                             ? `https://image.tmdb.org/t/p/w92/${item.profile_path}`
-                                                            : posterAlt) // fallback if no profile picture
+                                                            : posterAlt)
                                                         : (item.poster_path
                                                             ? `https://image.tmdb.org/t/p/w92/${item.poster_path}`
-                                                            : posterAlt) // fallback if no poster
+                                                            : posterAlt)
                                                 }
                                                 alt={item.title || item.name}
-                                                style={{
-                                                    width: "50px",
-                                                    height: "75px",
-                                                    objectFit: "cover",
-                                                    borderRadius: "4px",
-                                                }}
                                             />
                                             <div>
-                                                <p style={{ margin: 0, fontWeight: 600 }}>{item.title || item.name}</p>
-                                                <p style={{ margin: 0, fontSize: "0.85rem", color: "#666" }}>
+                                                <p className="result-title">{item.title || item.name}</p>
+                                                <p className="result-meta">
                                                     {item.media_type.charAt(0).toUpperCase() + item.media_type.slice(1)}
                                                     {item.media_type !== "person" && (
                                                         `, ${item.first_air_date?.split("-")[0] ||
@@ -170,7 +147,7 @@ function NavBar() {
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
                 </button>
-            </div>
+            </form>
         </div>
     );
 }
